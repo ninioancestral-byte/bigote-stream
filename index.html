@@ -1,175 +1,108 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Mi Streaming Privado</title>
-
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<meta charset="UTF-8">
+<title>Video Chat</title>
 
 <style>
 
 body{
-background:#0f0f0f;
-color:white;
-font-family:Arial;
 margin:0;
-}
-
-.container{
+font-family:Arial;
+background:#111;
+color:white;
 display:flex;
 height:100vh;
 }
 
-.video{
+#video-container{
 flex:3;
-padding:20px;
-}
-
-.chat{
-flex:1;
-border-left:1px solid #333;
-padding:10px;
-background:#181818;
+display:flex;
+justify-content:center;
+align-items:center;
+background:black;
 }
 
 video{
-width:100%;
+width:90%;
+max-width:900px;
 border-radius:10px;
 }
 
-h1{
-margin-bottom:10px;
+#chat-container{
+flex:1;
+display:flex;
+flex-direction:column;
+border-left:1px solid #333;
 }
 
-.chatbox{
-height:80%;
+#messages{
+flex:1;
+padding:10px;
 overflow-y:auto;
-border:1px solid #333;
-padding:10px;
-margin-bottom:10px;
 }
 
-input{
-width:100%;
-padding:10px;
-background:#222;
+.message{
+margin-bottom:8px;
+}
+
+#chat-input{
 border:none;
+padding:12px;
+font-size:16px;
+background:#222;
 color:white;
+outline:none;
 }
 
 </style>
-
 </head>
 
 <body>
 
-<div class="container">
-
-<div class="video">
-
-<h1>🔴 Streaming en vivo</h1>
-
-<video id="video" controls autoplay></video>
-
+<div id="video-container">
+<video id="video" autoplay playsinline></video>
 </div>
 
-<div class="chat">
-
-<h2>Chat</h2>
-
-<div class="chatbox" id="chatbox"></div>
-
-<input id="message" placeholder="Escribe mensaje..." />
-
-</div>
-
+<div id="chat-container">
+<div id="messages"></div>
+<input id="chat-input" placeholder="Escribe un mensaje..." />
 </div>
 
 <script>
 
-var video = document.getElementById("video");
+const video = document.getElementById("video")
+const input = document.getElementById("chat-input")
+const messages = document.getElementById("messages")
 
-if(Hls.isSupported()){
-
-var hls = new Hls();
-
-hls.loadSource("https://stream.mux.com/dRfUUTwjqGdPJdusKFzK71iG00dzL6wqwIw3JFSdAuOk.m3u8");
-
-hls.attachMedia(video);
-
-}
-
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-
-const { createClient } = supabase
-
-const supabaseClient = createClient(
-"https://vulsixsgdxwexhvfgjsg.supabase.co",
-"sb_publishable_DqV3kdkLiO9glnjzCwyeNw_MqkHJ7bP"
-)
-
-const chatbox = document.getElementById("chatbox")
-const input = document.getElementById("message")
-
-async function loadMessages(){
-
-const { data, error } = await supabaseClient
-.from("messages")
-.select("*")
-.order("created_at",{ascending:true})
-
-if(error){
-console.log("Error leyendo mensajes:", error)
-return
-}
-
-chatbox.innerHTML=""
-
-data.forEach(msg => {
-
-const div = document.createElement("div")
-
-div.textContent = msg.username + ": " + msg.message
-
-chatbox.appendChild(div)
-
+// webcam
+navigator.mediaDevices.getUserMedia({video:true,audio:false})
+.then(stream=>{
+video.srcObject = stream
 })
 
-}
-
-input.addEventListener("keydown", async function(e){
+// enviar mensaje
+input.addEventListener("keydown", function(e){
 
 if(e.key === "Enter"){
-
-e.preventDefault()
 
 const text = input.value.trim()
 
 if(text === "") return
 
-const { error } = await supabaseClient
-.from("messages")
-.insert([
-{ username:"user", message:text }
-])
+const div = document.createElement("div")
+div.className = "message"
+div.textContent = "user: " + text
 
-if(error){
-console.log("Error insertando mensaje:", error)
-return
-}
+messages.appendChild(div)
 
-input.value=""
+messages.scrollTop = messages.scrollHeight
 
-loadMessages()
+input.value = ""
 
 }
 
 })
-
-loadMessages()
 
 </script>
 
