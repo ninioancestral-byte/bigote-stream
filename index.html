@@ -95,10 +95,9 @@ hls.attachMedia(video);
 
 }
 
-
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
 
@@ -112,10 +111,15 @@ const input = document.getElementById("message")
 
 async function loadMessages(){
 
-let { data } = await supabaseClient
+const { data, error } = await supabaseClient
 .from("messages")
 .select("*")
 .order("created_at",{ascending:true})
+
+if(error){
+console.log("ERROR LEYENDO MENSAJES:", error)
+return
+}
 
 chatbox.innerHTML=""
 
@@ -131,11 +135,21 @@ input.addEventListener("keypress", async (e)=>{
 
 if(e.key==="Enter"){
 
-await supabaseClient.from("messages").insert([
-{ username:"user", message:input.value }
-])
+const text = input.value.trim()
+
+if(text==="") return
+
+const { error } = await supabaseClient
+.from("messages")
+.insert([{ username:"user", message:text }])
+
+if(error){
+console.log("ERROR INSERTANDO:", error)
+return
+}
 
 input.value=""
+
 loadMessages()
 
 }
@@ -146,8 +160,6 @@ loadMessages()
 
 </script>
 
-
 </body>
 
 </html>
-
