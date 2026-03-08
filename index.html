@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Mi Streaming Privado</title>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+<style>
+body{
+background:#0f0f0f;
+color:white;
+font-family:Arial;
+margin:0;
+}
+
+.container{
+display:flex;
+height:100vh;
+}
+
+.video{
+flex:3;
+padding:20px;
+}
+
+.chat{
+flex:1;
+border-left:1px solid #333;
+padding:10px;
+background:#181818;
+}
+
+video{
+width:100%;
+border-radius:10px;
+}
+
+h1{
+margin-bottom:10px;
+}
+
+.chatbox{
+height:80%;
+overflow-y:auto;
+border:1px solid #333;
+padding:10px;
+margin-bottom:10px;
+}
+
+input{
+width:100%;
+padding:10px;
+background:#222;
+border:none;
+color:white;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="video">
+
+<h1>🔴 Streaming en vivo</h1>
+
+<video id="video" controls autoplay></video>
+
+</div>
+
+<div class="chat">
+
+<h2>Chat</h2>
+
+<div class="chatbox" id="chatbox"></div>
+
+<input id="message" placeholder="Escribe mensaje..."/>
+
+</div>
+
+</div>
+
+<script>
+
+var video = document.getElementById('video');
+
+if(Hls.isSupported()) {
+
+var hls = new Hls();
+
+hls.loadSource("https://stream.mux.com/31FNywd3oGGm011s6V3XE9wymm52f01f4tlS3rVCssCNo.m3u8");
+
+hls.attachMedia(video);
+
+}
+
+const chatbox = document.getElementById("chatbox");
+const input = document.getElementById("message");
+
+input.addEventListener("keypress", function(e){
+
+if(e.key === "Enter"){
+
+const msg = document.createElement("div");
+
+msg.textContent = input.value;
+
+chatbox.appendChild(msg);
+
+input.value="";
+
+}
+
+});
+
+</script>
+
+</body>
+</html>
