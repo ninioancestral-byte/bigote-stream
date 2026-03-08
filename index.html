@@ -95,24 +95,6 @@ hls.attachMedia(video);
 
 }
 
-const chatbox = document.getElementById("chatbox");
-const input = document.getElementById("message");
-
-input.addEventListener("keypress", function(e){
-
-if(e.key === "Enter"){
-
-const msg = document.createElement("div");
-
-msg.textContent = input.value;
-
-chatbox.appendChild(msg);
-
-input.value="";
-
-}
-
-});
 
 </script>
 
@@ -168,3 +150,4 @@ loadMessages()
 </body>
 
 </html>
+
